@@ -1,8 +1,9 @@
-from pyrogram import Client, filters
 from pyrogram.types import CallbackQuery
+from main import app
+from pyrogram import filters
 
-@Client.on_callback_query(filters.regex("^help$"))
-async def help_handler(client: Client, query: CallbackQuery):
+@app.on_callback_query(filters.regex("^help$"))
+async def help_handler(client, query: CallbackQuery):
     text = (
         "Bot ini untuk mengelola grup & channel Telegram Anda.\n"
         "Fitur utama:\n"
