@@ -1,8 +1,7 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, CallbackQuery
 from auth import login_flow, check_session_valid
-from db import delete_session, update_last_active
-from utils import edit_or_reply
+from db import delete_session
 
 STATE = {}
 
@@ -33,11 +32,10 @@ async def message_handler(client: Client, message: Message):
 
         async def code_callback(text):
             await message.reply(text)
-            return None
+            return otp
 
         async def password_callback(text):
             await message.reply(text)
-            # Tunggu pesan balasan 2FA
             response = await client.listen(message.chat.id)
             return response.text
 
@@ -46,11 +44,11 @@ async def message_handler(client: Client, message: Message):
             await message.reply("Login berhasil! Anda bisa mulai mengelola grup & channel Anda.")
             del STATE[user_id]
         else:
-            await message.reply("Login gagal, coba ulangi dari awal dengan menekan tombol 🔐 Login.")
+            await message.reply("Login gagal, coba ulangi dari awal dengan menekan tombol \ud83d\udd10 Login.")
             del STATE[user_id]
 
 @Client.on_callback_query(filters.regex("^logout$"))
 async def logout(client: Client, query: CallbackQuery):
     user_id = query.from_user.id
     await delete_session(user_id)
-    await query.message.edit("Anda sudah logout. Untuk login ulang, klik tombol 🔐 Login.")
+    await query.message.edit("Anda sudah logout. Untuk login ulang, klik tombol \ud83d\udd10 Login.")
