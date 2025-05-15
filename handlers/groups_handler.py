@@ -1,8 +1,9 @@
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from db import get_session, update_last_active
 from config import ITEMS_PER_PAGE
 from pyrogram import Client as UserClient
+from main import app  # Import app dari main.py
 
 async def fetch_user_chats(user_client):
     dialogs = []
@@ -42,8 +43,8 @@ def build_keyboard(chats, page, filter_type):
 
     return InlineKeyboardMarkup(buttons)
 
-@Client.on_callback_query(filters.regex("^show_chats$"))
-async def show_chats(client: Client, query: CallbackQuery):
+@app.on_callback_query(filters.regex("^show_chats$"))
+async def show_chats(client: app, query: CallbackQuery):
     user_id = query.from_user.id
     session = await get_session(user_id)
     if not session:
@@ -69,8 +70,8 @@ async def show_chats(client: Client, query: CallbackQuery):
     await query.message.edit("Daftar Grup & Channel (Filter: Semua, Halaman 1)", reply_markup=keyboard)
     await user_client.stop()
 
-@Client.on_callback_query(filters.regex("^page_"))
-async def paginate(client: Client, query: CallbackQuery):
+@app.on_callback_query(filters.regex("^page_"))
+async def paginate(client: app, query: CallbackQuery):
     user_id = query.from_user.id
     data = query.data.split("_")
     filter_type = data[1]
@@ -98,8 +99,8 @@ async def paginate(client: Client, query: CallbackQuery):
         reply_markup=keyboard,
     )
 
-@Client.on_callback_query(filters.regex("^leave_"))
-async def handle_leave_group(client: Client, query: CallbackQuery):
+@app.on_callback_query(filters.regex("^leave_"))
+async def handle_leave_group(client: app, query: CallbackQuery):
     data = query.data
     user_id = query.from_user.id
 
@@ -109,7 +110,6 @@ async def handle_leave_group(client: Client, query: CallbackQuery):
         await query.answer("Sesi kamu sudah habis, silakan login ulang.", show_alert=True)
         return
 
-    from pyrogram import Client as UserClient
     user_client = UserClient(
         f"user_{user_id}",
         api_id=client.api_id,
