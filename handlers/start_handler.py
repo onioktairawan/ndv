@@ -1,7 +1,7 @@
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram import filters
+from main import app  # pakai instance app
 
-@Client.on_message(filters.private & filters.command("start"))
+@app.on_message(filters.private & filters.command("start"))
 async def start(client, message):
     text = (
         "Selamat datang di Bot Manajemen Grup & Channel.\n\n"
